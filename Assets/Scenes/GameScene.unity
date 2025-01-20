@@ -262,6 +262,7 @@ MonoBehaviour:
   cheetahPrefab: {fileID: 8024834404791888086, guid: 98bc0314f61e1494aad679fbd1047a54, type: 3}
   bunnyPrefab: {fileID: 2849574695746656919, guid: 7ba55c493740e8f4c95ba0d63a0e5fb3, type: 3}
   spawnPoint: {fileID: 598433527}
+  cameraFollow: {fileID: 1529004784}
 --- !u!4 &1230879607
 Transform:
   m_ObjectHideFlags: 0
@@ -288,6 +289,7 @@ GameObject:
   - component: {fileID: 1529004783}
   - component: {fileID: 1529004782}
   - component: {fileID: 1529004781}
+  - component: {fileID: 1529004784}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -369,6 +371,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1529004784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1529004780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 000574fd2d3622a488f95d6fb0cfd34b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
+  smoothSpeed: 0.125
+  fixedY: 0
+  fixedZ: -10
 --- !u!1 &1920096656
 GameObject:
   m_ObjectHideFlags: 0
@@ -446,7 +464,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1920096656}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.21676683, y: 0.09334487, z: 10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -460,5 +478,5 @@ SceneRoots:
   - {fileID: 1529004783}
   - {fileID: 598433527}
   - {fileID: 1230879607}
-  - {fileID: 1920096658}
   - {fileID: 995850263}
+  - {fileID: 1920096658}

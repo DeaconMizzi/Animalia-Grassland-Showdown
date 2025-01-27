@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 5568115449913063806}
   - component: {fileID: -6474621016574020177}
   - component: {fileID: 73583919458264877}
+  - component: {fileID: -3222682603328085008}
   m_Layer: 0
   m_Name: Cheetah
   m_TagString: Player
@@ -203,9 +204,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c33b2e8724b53764b8c91754ada85446, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterType: 0
   moveSpeed: 5
   jumpForce: 7
   maxJumps: 2
+  dashSpeed: 15
+  dashDuration: 0.2
+  dashCooldown: 1
   attackPrefab: {fileID: 1635799163529615806, guid: 16e4a429091ba8743a41c4e57cab0572, type: 3}
   attackPoint: {fileID: 6066600473329995258}
   attackCooldown: 0.5
+--- !u!114 &-3222682603328085008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8024834404791888086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3aac670189f3f084a871ebe2175d6030, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 3
+  healthUI: {fileID: 0}

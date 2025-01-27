@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement; // For scene transitions
 
 public class BossController : MonoBehaviour
 {
@@ -49,6 +50,8 @@ public class BossController : MonoBehaviour
         StopAllCoroutines(); // Stop attack cycles
         // Add death animation or effect here
         Destroy(gameObject, 1f); // Destroy the boss object after 1 second
+        SceneManager.LoadScene("Win"); // Replace "Win" with the exact name of your Win scene
+
     }
 
     private IEnumerator AttackCycle()

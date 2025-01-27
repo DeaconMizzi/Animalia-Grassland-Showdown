@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour
     public float attackCooldown = 0.5f;  // Cooldown between attacks
 
     private Rigidbody2D rb;
+    private Animator animator; // Animator reference for animations
     private int jumpCount;
     private float lastAttackTime = 0f;
     private bool isDashing = false;
@@ -31,6 +32,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>(); // Ensure an Animator is attached
         jumpCount = maxJumps;
     }
 
@@ -49,6 +51,9 @@ public class PlayerController : MonoBehaviour
         {
             transform.localScale = new Vector3(-1, 1, 1); // Facing left
         }
+
+        // Update Animator for running instantly
+        animator.SetBool("isRunning", Mathf.Abs(moveInput) > 0);
 
         // Character-specific abilities
         if (characterType == CharacterType.Cheetah)
@@ -123,18 +128,31 @@ public class PlayerController : MonoBehaviour
 
     void PerformAttack()
     {
+        // Trigger the punch animation
+        if (animator != null)
+        {
+            animator.SetTrigger("Punch");
+        }
+
+        // Delay the actual attack hitbox creation
+        StartCoroutine(DelayedAttack());
+    }
+
+    private IEnumerator DelayedAttack()
+    {
+        // Wait for 0.1 seconds for animation to sync
+        yield return new WaitForSeconds(0.1f);
+
+        // Spawn the attack box
         if (attackPrefab != null && attackPoint != null)
         {
-            // Check if an attack is already active
             if (attackPoint.childCount == 0)
             {
-                // Spawn the punch as a child of the attackPoint
                 GameObject attack = Instantiate(attackPrefab, attackPoint.position, Quaternion.identity, attackPoint);
 
-                // Optional: Set the local position to ensure it aligns correctly with the player's facing direction
-                attack.transform.localPosition = Vector3.right * 0.5f;
-
-                Debug.Log("Punch performed!");
+                float attackOffsetX = 0.2f;
+                float direction = transform.localScale.x > 0 ? 1 : -1;
+                attack.transform.localPosition = new Vector3(attackOffsetX * direction, 0, 0);
             }
         }
     }

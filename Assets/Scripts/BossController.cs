@@ -19,8 +19,12 @@ public class BossController : MonoBehaviour
     [Header("Boss State")]
     private bool isAlive = true;
 
+    [Header("Animator")]
+    private Animator animator; // Reference to Animator
+
     void Start()
     {
+        animator = GetComponent<Animator>(); // Ensure the Animator is attached
         currentHealth = maxHealth; // Initialize boss health
         StartCoroutine(AttackCycle()); // Start attack pattern
     }
@@ -59,6 +63,12 @@ public class BossController : MonoBehaviour
     private void PerformAttack()
     {
         int attackType = Random.Range(0, 3); // Randomly choose an attack
+
+        // Trigger the attack animation
+        if (animator != null)
+        {
+            animator.SetTrigger("Attack");
+        }
 
         switch (attackType)
         {

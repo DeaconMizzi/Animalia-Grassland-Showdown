@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 869738957606753764}
   - component: {fileID: 2531497115702435420}
   - component: {fileID: 6393921699827625006}
+  - component: {fileID: -1240846489231280638}
   m_Layer: 0
   m_Name: Squid 1
   m_TagString: Boss
@@ -152,6 +153,27 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!95 &-1240846489231280638
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8477583070892435535}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: eed7c10149a87c0498c9ed44855c78b1, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &8725005177403649275
 GameObject:
   m_ObjectHideFlags: 0

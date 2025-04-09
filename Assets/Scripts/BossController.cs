@@ -6,28 +6,30 @@ using UnityEngine.SceneManagement; // For scene transitions
 public class BossController : MonoBehaviour
 {
     [Header("Boss Health")]
-    public int maxHealth = 10; // Boss dies after 10 hits
+    public int maxHealth = 10;
     [HideInInspector] public int currentHealth;
 
     [Header("Attack Parameters")]
-    public float minAttackInterval = 3f; // Minimum time between attacks
-    public float maxAttackInterval = 5f; // Maximum time between attacks
-    public Transform attackPoint; // The point from where attacks originate
-    public GameObject swipePrefab; // Swipe attack prefab
-    public GameObject spikesPrefab; // Spikes attack prefab
-    public GameObject wavePrefab; // Wave attack prefab
+    public float minAttackInterval = 3f;
+    public float maxAttackInterval = 5f;
+    public float chargeTime = 0.8f; // Delay before attacks
+    public Transform attackPoint;
+    public GameObject swipePrefab;
+    public GameObject spikesPrefab;
+    public GameObject wavePrefab;
+    public GameObject chargeGlow; // The visual glow object
 
     [Header("Boss State")]
     private bool isAlive = true;
 
     [Header("Animator")]
-    private Animator animator; // Reference to Animator
+    private Animator animator;
 
     void Start()
     {
-        animator = GetComponent<Animator>(); // Ensure the Animator is attached
-        currentHealth = maxHealth; // Initialize boss health
-        StartCoroutine(AttackCycle()); // Start attack pattern
+        animator = GetComponent<Animator>();
+        currentHealth = maxHealth;
+        StartCoroutine(AttackCycle());
     }
 
     public void TakeDamage(int damage)
@@ -47,9 +49,9 @@ public class BossController : MonoBehaviour
     {
         Debug.Log("Boss Defeated!");
         isAlive = false;
-        StopAllCoroutines(); // Stop attack cycles
-        Destroy(gameObject, 1f); // Destroy the boss object after 1 second
-        SceneManager.LoadScene("Win"); // Replace with your actual Win scene name
+        StopAllCoroutines();
+        Destroy(gameObject, 1f);
+        SceneManager.LoadScene("Win");
     }
 
     private IEnumerator AttackCycle()
@@ -57,13 +59,23 @@ public class BossController : MonoBehaviour
         while (isAlive)
         {
             yield return new WaitForSeconds(Random.Range(minAttackInterval, maxAttackInterval));
+
+            // 🌟 Charge-up glow before attack
+            if (chargeGlow != null)
+                chargeGlow.SetActive(true);
+
+            yield return new WaitForSeconds(chargeTime);
+
+            if (chargeGlow != null)
+                chargeGlow.SetActive(false);
+
             PerformAttack();
         }
     }
 
     private void PerformAttack()
     {
-        int attackType = Random.Range(0, 3); // Randomly choose an attack
+        int attackType = Random.Range(0, 3);
 
         if (animator != null)
         {
@@ -91,7 +103,7 @@ public class BossController : MonoBehaviour
         BossAttack bossAttack = attack.GetComponent<BossAttack>();
         if (bossAttack != null)
         {
-            bossAttack.speed = 4f; // Slower movement than before
+            bossAttack.speed = 4f;
         }
     }
 
@@ -110,14 +122,11 @@ public class BossController : MonoBehaviour
 
         for (int i = 0; i < spikeCount; i++)
         {
-            // Lock the Y position to ground level
             Vector3 groundPosition = new Vector3(attackPoint.position.x, -4.6f, attackPoint.position.z);
             GameObject spike = Instantiate(spikesPrefab, groundPosition, Quaternion.identity);
 
             if (previousSpike != null)
-            {
                 Destroy(previousSpike);
-            }
 
             previousSpike = spike;
 
@@ -125,9 +134,7 @@ public class BossController : MonoBehaviour
         }
 
         if (previousSpike != null)
-        {
             Destroy(previousSpike, 1.5f);
-        }
     }
 
     private void WaveAttack()
@@ -137,7 +144,7 @@ public class BossController : MonoBehaviour
         BossAttack bossAttack = attack.GetComponent<BossAttack>();
         if (bossAttack != null)
         {
-            bossAttack.speed = 2.5f;         // Slower wave
+            bossAttack.speed = 2.5f;
             bossAttack.isWave = true;
             bossAttack.waveAmplitude = 1.5f;
             bossAttack.waveFrequency = 2f;

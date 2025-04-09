@@ -48,10 +48,8 @@ public class BossController : MonoBehaviour
         Debug.Log("Boss Defeated!");
         isAlive = false;
         StopAllCoroutines(); // Stop attack cycles
-        // Add death animation or effect here
         Destroy(gameObject, 1f); // Destroy the boss object after 1 second
-        SceneManager.LoadScene("Win"); // Replace "Win" with the exact name of your Win scene
-
+        SceneManager.LoadScene("Win"); // Replace with your actual Win scene name
     }
 
     private IEnumerator AttackCycle()
@@ -67,7 +65,6 @@ public class BossController : MonoBehaviour
     {
         int attackType = Random.Range(0, 3); // Randomly choose an attack
 
-        // Trigger the attack animation
         if (animator != null)
         {
             animator.SetTrigger("Attack");
@@ -91,11 +88,10 @@ public class BossController : MonoBehaviour
     {
         Debug.Log("Swipe Attack!");
         GameObject attack = Instantiate(swipePrefab, attackPoint.position, Quaternion.identity);
-        // Ensure the attack prefab has the BossAttack script
         BossAttack bossAttack = attack.GetComponent<BossAttack>();
         if (bossAttack != null)
         {
-            bossAttack.speed = 8f; // Fast straight movement
+            bossAttack.speed = 4f; // Slower movement than before
         }
     }
 
@@ -107,17 +103,17 @@ public class BossController : MonoBehaviour
 
     private IEnumerator SpawnSpikes()
     {
-        int spikeCount = 3; // Number of spikes to spawn
-        float delayBetweenSpikes = 0.5f; // Delay between spikes
+        int spikeCount = 3;
+        float delayBetweenSpikes = 0.5f;
 
         GameObject previousSpike = null;
 
         for (int i = 0; i < spikeCount; i++)
         {
-            // Spawn a spike
-            GameObject spike = Instantiate(spikesPrefab, attackPoint.position, Quaternion.identity);
+            // Lock the Y position to ground level
+            Vector3 groundPosition = new Vector3(attackPoint.position.x, -4.6f, attackPoint.position.z);
+            GameObject spike = Instantiate(spikesPrefab, groundPosition, Quaternion.identity);
 
-            // Destroy the previous spike
             if (previousSpike != null)
             {
                 Destroy(previousSpike);
@@ -128,7 +124,6 @@ public class BossController : MonoBehaviour
             yield return new WaitForSeconds(delayBetweenSpikes);
         }
 
-        // Destroy the final spike
         if (previousSpike != null)
         {
             Destroy(previousSpike, 1.5f);
@@ -139,14 +134,13 @@ public class BossController : MonoBehaviour
     {
         Debug.Log("Wave Attack!");
         GameObject attack = Instantiate(wavePrefab, attackPoint.position, Quaternion.identity);
-        // Ensure the attack prefab has the BossAttack script
         BossAttack bossAttack = attack.GetComponent<BossAttack>();
         if (bossAttack != null)
         {
-            bossAttack.speed = 4f;        // Slow wave movement
-            bossAttack.isWave = true;    // Enable wave motion
-            bossAttack.waveAmplitude = 1.5f; // Up and down height
-            bossAttack.waveFrequency = 2f;  // Wave speed
+            bossAttack.speed = 2.5f;         // Slower wave
+            bossAttack.isWave = true;
+            bossAttack.waveAmplitude = 1.5f;
+            bossAttack.waveFrequency = 2f;
         }
     }
 }

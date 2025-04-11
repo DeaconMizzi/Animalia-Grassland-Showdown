@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 6391355213870956856}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.11, y: 0, z: 0}
+  m_LocalPosition: {x: 0.147, y: -0.023, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -107,8 +107,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1437713937
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: -1938600058, guid: 20a752529981fa24bb808723bfdb580a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -153,18 +153,18 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.05600062, y: -0.022105485}
+  m_Offset: {x: -0.23192048, y: -0.13560247}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 4, y: 4}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.27493995, y: 0.47241575}
+  m_Size: {x: 1.1715646, y: 1.9932752}
   m_EdgeRadius: 0
 --- !u!50 &-6474621016574020177
 Rigidbody2D:
@@ -229,6 +229,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 5
   healthUI: {fileID: 0}
+  damageOverlayName: DamageOverlay
+  overlayDuration: 0.2
+  fadeSpeed: 5
+  invincibilityDuration: 2
+  flashInterval: 0.1
 --- !u!95 &-327385604648838298
 Animator:
   serializedVersion: 5

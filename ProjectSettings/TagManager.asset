@@ -50,3 +50,6 @@ TagManager:
   - name: Ground
     uniqueID: 4248970905
     locked: 0
+  - name: Characters
+    uniqueID: 2857253359
+    locked: 0

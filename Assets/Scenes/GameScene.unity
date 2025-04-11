@@ -7544,7 +7544,7 @@ Transform:
   m_GameObject: {fileID: 995850261}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 9.1323, y: -5.49, z: 4.5482507}
+  m_LocalPosition: {x: 9.1323, y: -5.53, z: 4.5482507}
   m_LocalScale: {x: -2.0844111, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8144,7 +8144,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 1.4507227
+  orthographic size: 2.8586032
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -8169,7 +8169,7 @@ Transform:
   m_GameObject: {fileID: 1529004780}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.39, y: -3.86, z: -10}
+  m_LocalPosition: {x: -7.39, y: -2.34, z: -10}
   m_LocalScale: {x: -1.1428126, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9202,6 +9202,14 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 869738957606753764, guid: 8f65205397798f94a894dc51fee585df, type: 3}
+      propertyPath: m_SortingLayer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 869738957606753764, guid: 8f65205397798f94a894dc51fee585df, type: 3}
+      propertyPath: m_SortingLayerID
+      value: -1437713937
+      objectReference: {fileID: 0}
     - target: {fileID: 2531497115702435420, guid: 8f65205397798f94a894dc51fee585df, type: 3}
       propertyPath: chargeGlow
       value: 
@@ -9224,7 +9232,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5351646605597884972, guid: 8f65205397798f94a894dc51fee585df, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -4.621
+      value: -3.89
       objectReference: {fileID: 0}
     - target: {fileID: 5351646605597884972, guid: 8f65205397798f94a894dc51fee585df, type: 3}
       propertyPath: m_LocalPosition.z

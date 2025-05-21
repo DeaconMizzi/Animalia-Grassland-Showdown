@@ -53,3 +53,6 @@ TagManager:
   - name: Characters
     uniqueID: 2857253359
     locked: 0
+  - name: WalkBehind
+    uniqueID: 833417083
+    locked: 0

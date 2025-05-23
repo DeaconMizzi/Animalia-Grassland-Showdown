@@ -1,7 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement; // For scene transitions
+using UnityEngine.SceneManagement;
 
 public class BossController : MonoBehaviour, IDamageable
 {
@@ -12,17 +11,18 @@ public class BossController : MonoBehaviour, IDamageable
     [Header("Attack Parameters")]
     public float minAttackInterval = 3f;
     public float maxAttackInterval = 5f;
-    public float chargeTime = 0.8f; // Delay before attacks
+    public float chargeTime = 0.8f;
     public Transform attackPoint;
     public GameObject swipePrefab;
     public GameObject spikesPrefab;
     public GameObject wavePrefab;
-    public GameObject chargeGlow; // The visual glow object
+    public GameObject chargeGlow;
+    public float hopDistance = 3f;
 
-    [Header("Boss State")]
+    [Header("Environment")]
+    public LayerMask groundLayer;
+
     private bool isAlive = true;
-
-    [Header("Animator")]
     private Animator animator;
 
     void Start()
@@ -35,14 +35,9 @@ public class BossController : MonoBehaviour, IDamageable
     public void TakeDamage(int damage)
     {
         if (!isAlive) return;
-
         currentHealth -= damage;
         Debug.Log("Boss hit! Current Health: " + currentHealth);
-
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
+        if (currentHealth <= 0) Die();
     }
 
     private void Die()
@@ -58,18 +53,25 @@ public class BossController : MonoBehaviour, IDamageable
     {
         while (isAlive)
         {
-            yield return new WaitForSeconds(Random.Range(minAttackInterval, maxAttackInterval));
+            yield return new WaitForSeconds(Random.Range(1f, 2f));
 
-            // 🌟 Charge-up glow before attack
+
             if (chargeGlow != null)
                 chargeGlow.SetActive(true);
-
             yield return new WaitForSeconds(chargeTime);
-
             if (chargeGlow != null)
                 chargeGlow.SetActive(false);
 
-            PerformAttack();
+            float actionChance = Random.value;
+
+            if (actionChance < 0.7f)
+            {
+                PerformAttack(); // 70% chance to attack
+            }
+            else
+            {
+                MoveBoss(); // 30% chance to dash
+            }
         }
     }
 
@@ -79,18 +81,21 @@ public class BossController : MonoBehaviour, IDamageable
 
         if (animator != null)
         {
-            animator.SetTrigger("Attack");
+            animator.ResetTrigger("Attack");
         }
 
         switch (attackType)
         {
             case 0:
+                animator.SetTrigger("Attack");;
                 SwipeAttack();
                 break;
             case 1:
+                animator.SetTrigger("Attack");
                 SpikesAttack();
                 break;
             case 2:
+                animator.SetTrigger("Attack");
                 WaveAttack();
                 break;
         }
@@ -101,10 +106,7 @@ public class BossController : MonoBehaviour, IDamageable
         Debug.Log("Swipe Attack!");
         GameObject attack = Instantiate(swipePrefab, attackPoint.position, Quaternion.identity);
         BossAttack bossAttack = attack.GetComponent<BossAttack>();
-        if (bossAttack != null)
-        {
-            bossAttack.speed = 4f;
-        }
+        if (bossAttack != null) bossAttack.speed = 4f;
     }
 
     private void SpikesAttack()
@@ -113,41 +115,84 @@ public class BossController : MonoBehaviour, IDamageable
         StartCoroutine(SpawnSpikes());
     }
 
-    private IEnumerator SpawnSpikes()
+   private IEnumerator SpawnSpikes()
     {
-        int spikeCount = 3;
-        float delayBetweenSpikes = 0.5f;
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj == null) yield break;
 
-        GameObject previousSpike = null;
+        Vector3 playerGroundPos = new Vector3(playerObj.transform.position.x, 0, 0);
+        RaycastHit2D baseGroundHit = Physics2D.Raycast(playerObj.transform.position, Vector2.down, 20f, groundLayer);
+        if (baseGroundHit.collider != null)
+            playerGroundPos.y = baseGroundHit.point.y;
+        else
+            yield break;
+
+        float step = 1.5f;
+        float initialDistance = 8f;
+        float delay = 0.3f;
+
+        float direction = transform.localScale.x > 0 ? 1f : -1f;
+        float totalDistance = Mathf.Abs(playerGroundPos.x - transform.position.x);
+        int spikeCount = Mathf.CeilToInt((initialDistance + totalDistance) / step);
 
         for (int i = 0; i < spikeCount; i++)
         {
-            Vector3 groundPosition = new Vector3(attackPoint.position.x, -4.6f, attackPoint.position.z);
-            GameObject spike = Instantiate(spikesPrefab, groundPosition, Quaternion.identity);
+            float xOffset = direction * (initialDistance - i * step);
+            Vector3 checkPos = new Vector3(playerGroundPos.x + xOffset, playerGroundPos.y + 1f, 0);
 
-            if (previousSpike != null)
-                Destroy(previousSpike);
+            RaycastHit2D hit = Physics2D.Raycast(checkPos, Vector2.down, 2f, groundLayer);
+            if (hit.collider != null)
+            {
+                float yOffset = +0.5f; // tweak for visual alignment
+                Vector3 spikePos = new Vector3(checkPos.x, hit.point.y + yOffset, attackPoint.position.z);
+                Instantiate(spikesPrefab, spikePos, Quaternion.identity);
+            }
 
-            previousSpike = spike;
-
-            yield return new WaitForSeconds(delayBetweenSpikes);
+            yield return new WaitForSeconds(delay);
         }
-
-        if (previousSpike != null)
-            Destroy(previousSpike, 1.5f);
     }
 
     private void WaveAttack()
     {
         Debug.Log("Wave Attack!");
+        GameObject player = GameObject.FindWithTag("Player");
         GameObject attack = Instantiate(wavePrefab, attackPoint.position, Quaternion.identity);
         BossAttack bossAttack = attack.GetComponent<BossAttack>();
         if (bossAttack != null)
         {
-            bossAttack.speed = 2.5f;
             bossAttack.isWave = true;
             bossAttack.waveAmplitude = 1.5f;
             bossAttack.waveFrequency = 2f;
+            if (player != null)
+            {
+                float dist = Vector2.Distance(player.transform.position, attackPoint.position);
+                bossAttack.speed = Mathf.Clamp(dist * 0.5f, 2f, 5f);
+            }
+            else bossAttack.speed = 2.5f;
         }
     }
+    private void MoveBoss()
+    {
+        float direction = Random.value < 0.5f ? -1f : 1f;
+
+        // Flip to match dash direction
+        transform.localScale = new Vector3(direction > 0 ? -1f : 1f, 1f, 1f);
+
+        // Trigger dash animation
+        if (animator != null)
+            animator.SetTrigger("Dash");
+
+        // Dash movement
+        Vector3 newPos = transform.position + new Vector3(hopDistance * direction, 0, 0);
+        transform.position = Vector3.Lerp(transform.position, newPos, 0.5f);
+
+        // Reset back to facing left after short delay
+        StartCoroutine(ResetFacingAfterDash());
+    }
+
+    private IEnumerator ResetFacingAfterDash()
+    {
+        yield return new WaitForSeconds(0.3f); // match your dash animation length
+        transform.localScale = new Vector3(1f, 1f, 1f); // Always face left after dash
+}
 }

@@ -74,10 +74,10 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1437713937
+  m_SortingLayer: 3
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: 1660139856, guid: 8002835e5ae62964aa8b174fe7b47867, type: 3}
   m_Color: {r: 0.9098039, g: 0.25281343, b: 0.06666667, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -104,10 +104,16 @@ MonoBehaviour:
   currentHealth: 0
   minAttackInterval: 3
   maxAttackInterval: 5
+  chargeTime: 0.8
   attackPoint: {fileID: 5801963723162153766}
   swipePrefab: {fileID: 8870999077148733714, guid: e9c957bace1260e458d2ed7911546bec, type: 3}
   spikesPrefab: {fileID: 5281957012764767300, guid: 6b4c6b6069207d84fbf631f0c8e96e9a, type: 3}
   wavePrefab: {fileID: 6324183614954657912, guid: 67f832d17e2c5c341ae5aa04a6ea7bcb, type: 3}
+  chargeGlow: {fileID: 0}
+  hopDistance: 3
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!61 &6393921699827625006
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -144,7 +150,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 1.5, y: 0.75}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0

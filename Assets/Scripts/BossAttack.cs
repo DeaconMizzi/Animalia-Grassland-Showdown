@@ -1,42 +1,35 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BossAttack : MonoBehaviour
 {
-    public float lifetime = 1.5f; // Lifetime of the attack
-    public int damage = 1;        // Damage dealt by the attack
-    public float speed = 5f;      // Movement speed (used for Swipe and Wave)
-    public bool isWave = false;   // Determines if the attack is a wave
-    public float waveAmplitude = 1f; // Wave motion amplitude
-    public float waveFrequency = 2f; // Wave motion frequency
+    public float lifetime = 1.5f;
+    public int damage = 1;
+    public float speed = 5f;
+    public bool isWave = false;
+    public float waveAmplitude = 1f;
+    public float waveFrequency = 2f;
+    public bool isStationary = false; // NEW: Prevent movement for ground-based spikes
 
     private Vector2 direction;
     private Vector2 startPosition;
 
     void Start()
     {
-        // Destroy the attack after its lifetime
         Destroy(gameObject, lifetime);
 
-        // For Swipe and Wave, calculate the direction toward the player
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null)
+        if (!isStationary)
         {
-            direction = (player.transform.position - transform.position).normalized;
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            direction = (player != null) ? (player.transform.position - transform.position).normalized : Vector2.right;
+            startPosition = transform.position;
         }
-        else
-        {
-            direction = Vector2.right; // Default to moving right
-        }
-
-        // Store starting position for wave motion
-        startPosition = transform.position;
     }
 
     void Update()
     {
-        // Handle movement logic
+        if (isStationary) return;
+
         if (isWave)
         {
             float waveY = Mathf.Sin(Time.time * waveFrequency) * waveAmplitude;
@@ -50,17 +43,14 @@ public class BossAttack : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        // Check if the attack hits the player
         if (collision.CompareTag("Player"))
         {
             PlayerHealth playerHealth = collision.GetComponent<PlayerHealth>();
             if (playerHealth != null)
             {
-                playerHealth.TakeDamage(damage); // Apply damage to the player
+                playerHealth.TakeDamage(damage);
                 Debug.Log("Player hit by attack! Damage: " + damage);
             }
-
-            // Destroy the attack after it hits the player
             Destroy(gameObject);
         }
     }

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 8002835e5ae62964aa8b174fe7b47867
+guid: b835069191bab5b44989293951aff1d7
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -97,12 +97,12 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Player Sword Stab 96x48_0
+      name: dashSquid_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 96
+        width: 48
         height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -111,19 +111,40 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 86588fede78baf243bbc0f56973d15d4
-      internalID: 1660139856
+      spriteID: 210007ca98b3c48478290f4514a499ce
+      internalID: -1121557183
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Player Sword Stab 96x48_1
+      name: dashSquid_1
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c324c4145e4ba12499923f82916237ea
+      internalID: -630094011
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dashSquid_2
       rect:
         serializedVersion: 2
         x: 96
         y: 0
-        width: 96
+        width: 48
         height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -132,19 +153,40 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c546608d1836e674ea17dc5018758a52
-      internalID: 856158522
+      spriteID: a4fe8d7bcb2a0e54a9acb0d8aef52ba2
+      internalID: 1161340198
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Player Sword Stab 96x48_2
+      name: dashSquid_3
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f8a9d906bacca9b45bc0b140e3f3b5a9
+      internalID: -604544153
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dashSquid_4
       rect:
         serializedVersion: 2
         x: 192
         y: 0
-        width: 96
+        width: 48
         height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -153,19 +195,40 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 91613fe8f2ccca14397693b03b93a065
-      internalID: 2016729486
+      spriteID: 23568880ffec30d4cb2b08d0b5a90a92
+      internalID: -969874766
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Player Sword Stab 96x48_3
+      name: dashSquid_5
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85e8a64411eb79b409296e17d9f3b8f4
+      internalID: 162194588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dashSquid_6
       rect:
         serializedVersion: 2
         x: 288
         y: 0
-        width: 96
+        width: 48
         height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -174,19 +237,40 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 364c85f003543bc4e8383d3f6170ea45
-      internalID: -33215465
+      spriteID: d42e7f7442b04e443933065a3ca909f0
+      internalID: -167620751
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Player Sword Stab 96x48_4
+      name: dashSquid_7
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1e631f6bee86f504281ef5f2f98d2be5
+      internalID: 493208830
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dashSquid_8
       rect:
         serializedVersion: 2
         x: 384
         y: 0
-        width: 96
+        width: 48
         height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -195,50 +279,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4f8b1d82dae247245af5cc66c012c9c8
-      internalID: 917890524
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Player Sword Stab 96x48_5
-      rect:
-        serializedVersion: 2
-        x: 480
-        y: 0
-        width: 96
-        height: 48
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: a0debbcda7505a9438d8880ae84bd9dd
-      internalID: -677463727
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Player Sword Stab 96x48_6
-      rect:
-        serializedVersion: 2
-        x: 576
-        y: 0
-        width: 96
-        height: 48
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 8269ff0cb4553a64c953695db744166f
-      internalID: -1786947644
+      spriteID: 32f9f9039fb146048b76d17b05ebf7f8
+      internalID: 2109360086
       vertices: []
       indices: 
       edges: []
@@ -254,13 +296,15 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Player Sword Stab 96x48_0: 1660139856
-      Player Sword Stab 96x48_1: 856158522
-      Player Sword Stab 96x48_2: 2016729486
-      Player Sword Stab 96x48_3: -33215465
-      Player Sword Stab 96x48_4: 917890524
-      Player Sword Stab 96x48_5: -677463727
-      Player Sword Stab 96x48_6: -1786947644
+      dashSquid_0: -1121557183
+      dashSquid_1: -630094011
+      dashSquid_2: 1161340198
+      dashSquid_3: -604544153
+      dashSquid_4: -969874766
+      dashSquid_5: 162194588
+      dashSquid_6: -167620751
+      dashSquid_7: 493208830
+      dashSquid_8: 2109360086
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

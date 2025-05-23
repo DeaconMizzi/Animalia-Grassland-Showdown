@@ -15,16 +15,13 @@ public class Attack : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        // Check for collision with the boss
-        if (collision.CompareTag("Boss"))
+        var damageable = collision.GetComponent<IDamageable>();
+        if (damageable != null)
         {
-            Debug.Log("Boss hit!");
-            // Reduce boss health
-            BossController boss = collision.GetComponent<BossController>();
-            if (boss != null)
-            {
-                boss.TakeDamage(damage);
-            }
+            damageable.TakeDamage(damage);
         }
+
+        // Optional: if this should only damage one target
+        Destroy(gameObject);
     }
 }

@@ -1,29 +1,33 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public enum CharacterType { Cheetah, Bunny } // Character type enum
-    public CharacterType characterType;         // Character type
+    public enum CharacterType { Cheetah, Bunny }
+    public CharacterType characterType;
 
-    [Header("Movement Parameters")]
-    public float moveSpeed = 5f;  // Speed for left/right movement
-    public float jumpForce = 7f;  // Force applied for jumping
-    public int maxJumps = 2;      // Max jumps (for Cheetah and Bunny)
+    [Header("Movement")]
+    public float moveSpeed = 5f;
+    public float jumpForce = 7f;
+    public int maxJumps = 2;
 
-    [Header("Dash Parameters (Cheetah Only)")]
-    public float dashSpeed = 15f;     // Dash speed
-    public float dashDuration = 0.2f; // Dash duration
-    public float dashCooldown = 1f;   // Dash cooldown
+    [Header("Dash (Cheetah only)")]
+    public float dashSpeed = 15f;
+    public float dashDuration = 0.2f;
+    public float dashCooldown = 1f;
 
-    [Header("Attack Parameters")]
-    public GameObject attackPrefab;  // Prefab for the attack (e.g., melee or projectile)
-    public Transform attackPoint;    // The point where the attack spawns
-    public float attackCooldown = 0.5f;  // Cooldown between attacks
+    [Header("Attack")]
+    public GameObject attackPrefab;
+    public Transform attackPoint;
+    public float attackCooldown = 0.5f;
+
+    [Header("Ground Check")]
+    public Transform groundCheck;
+    public float groundCheckRadius = 0.2f;
+    public LayerMask groundLayer;
 
     private Rigidbody2D rb;
-    private Animator animator; // Animator reference for animations
+    private Animator animator;
     private int jumpCount;
     private float lastAttackTime = 0f;
     private bool isDashing = false;
@@ -32,51 +36,88 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>(); // Ensure an Animator is attached
+        animator = GetComponent<Animator>();
         jumpCount = maxJumps;
     }
 
     void Update()
     {
-        // Horizontal Movement
-        float moveInput = Input.GetAxis("Horizontal");
-        rb.velocity = new Vector2(moveInput * moveSpeed, rb.velocity.y);
+        UpdateAnimatorStates();
 
-        // Flip player based on movement direction
-        if (moveInput > 0)
-        {
-            transform.localScale = new Vector3(1, 1, 1); // Facing right
-        }
-        else if (moveInput < 0)
-        {
-            transform.localScale = new Vector3(-1, 1, 1); // Facing left
-        }
+        HandleMovement();
+        HandleDirection();
+        HandleJump();
+        HandleAttack();
+    }
 
-        // Update Animator for running instantly
-        animator.SetBool("isRunning", Mathf.Abs(moveInput) > 0);
-
-        // Character-specific abilities
-        if (characterType == CharacterType.Cheetah)
+    void FixedUpdate()
+    {
+        if (IsGrounded())
         {
-            HandleDash();
-            HandleDoubleJump();
-        }
-        else if (characterType == CharacterType.Bunny)
-        {
-            HandleHighJump();
-        }
-
-        // Attacking
-        if (Input.GetKeyDown(KeyCode.K) && Time.time >= lastAttackTime + attackCooldown)
-        {
-            PerformAttack();
-            lastAttackTime = Time.time;
+            jumpCount = maxJumps;
         }
     }
 
-    private void HandleDash()
+    void UpdateAnimatorStates()
     {
-        // Dash logic for Cheetah
+        animator.SetBool("isGrounded", IsGrounded());
+        float moveInput = Input.GetAxis("Horizontal");
+        animator.SetBool("isRunning", Mathf.Abs(moveInput) > 0);
+    }
+
+    void HandleMovement()
+    {
+        if (isDashing) return;
+
+        float moveInput = Input.GetAxis("Horizontal");
+        rb.velocity = new Vector2(moveInput * moveSpeed, rb.velocity.y);
+    }
+
+    void HandleDirection()
+    {
+        float moveInput = Input.GetAxis("Horizontal");
+
+        if (moveInput > 0)
+        {
+            transform.localScale = new Vector3(1, 1, 1);
+            attackPoint.localScale = new Vector3(1, 1, 1);
+        }
+        else if (moveInput < 0)
+        {
+            transform.localScale = new Vector3(-1, 1, 1);
+            attackPoint.localScale = new Vector3(-1, 1, 1);
+        }
+    }
+
+    void HandleJump()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && jumpCount > 0)
+        {
+            float jumpMultiplier = (characterType == CharacterType.Bunny) ? 1.5f : 1f;
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce * jumpMultiplier);
+            jumpCount--;
+
+            animator.SetTrigger("Jump");
+        }
+    }
+
+    void HandleAttack()
+    {
+        if (Input.GetKeyDown(KeyCode.K) && Time.time >= lastAttackTime + attackCooldown)
+        {
+            animator.SetTrigger("Punch");
+            lastAttackTime = Time.time;
+            StartCoroutine(DelayedAttack());
+        }
+
+        if (characterType == CharacterType.Cheetah)
+        {
+            HandleDash();
+        }
+    }
+
+    void HandleDash()
+    {
         if (Input.GetKeyDown(KeyCode.L) && Time.time >= lastDashTime + dashCooldown && !isDashing)
         {
             StartCoroutine(Dash());
@@ -87,73 +128,36 @@ public class PlayerController : MonoBehaviour
     private IEnumerator Dash()
     {
         isDashing = true;
-        float originalGravity = rb.gravityScale; // Store original gravity
-        rb.gravityScale = 0;                     // Disable gravity during dash
+        animator.SetBool("isDashing", true); // Trigger dash animation
 
-        // Determine dash direction based on player's facing direction
-        float dashDirection = transform.localScale.x > 0 ? 1 : -1; // 1 = Right, -1 = Left
-        rb.velocity = new Vector2(dashDirection * dashSpeed, 0);   // Dash in that direction
+        float originalGravity = rb.gravityScale;
+        rb.gravityScale = 0;
+
+        float dashDirection = transform.localScale.x > 0 ? 1 : -1;
+        rb.velocity = new Vector2(dashDirection * dashSpeed, 0);
 
         yield return new WaitForSeconds(dashDuration);
 
-        rb.gravityScale = originalGravity; // Restore gravity
+        rb.gravityScale = originalGravity;
         isDashing = false;
-    }
-
-    private void HandleDoubleJump()
-    {
-        // Double jump logic for Cheetah
-        if (Input.GetKeyDown(KeyCode.Space) && jumpCount > 0)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            jumpCount--;
-        }
-    }
-
-    private void HandleHighJump()
-    {
-        // High jump logic for Bunny
-        if (Input.GetKeyDown(KeyCode.Space) && jumpCount > 0)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce * 1.5f); // Higher jump multiplier for Bunny
-            jumpCount--;
-        }
-    }
-
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        // Reset jumps for both characters
-        jumpCount = maxJumps;
-    }
-
-    void PerformAttack()
-    {
-        // Trigger the punch animation
-        if (animator != null)
-        {
-            animator.SetTrigger("Punch");
-        }
-
-        // Delay the actual attack hitbox creation
-        StartCoroutine(DelayedAttack());
+        animator.SetBool("isDashing", false); // Return to idle/run
     }
 
     private IEnumerator DelayedAttack()
     {
-        // Wait for 0.1 seconds for animation to sync
         yield return new WaitForSeconds(0.1f);
 
-        // Spawn the attack box
-        if (attackPrefab != null && attackPoint != null)
+        if (attackPrefab != null && attackPoint != null && attackPoint.childCount == 0)
         {
-            if (attackPoint.childCount == 0)
-            {
-                GameObject attack = Instantiate(attackPrefab, attackPoint.position, Quaternion.identity, attackPoint);
-
-                float attackOffsetX = 0.2f;
-                float direction = transform.localScale.x > 0 ? 1 : -1;
-                attack.transform.localPosition = new Vector3(attackOffsetX * direction, 0, 0);
-            }
+            GameObject attack = Instantiate(attackPrefab, attackPoint.position, Quaternion.identity, attackPoint);
+            float attackOffsetX = 0.2f;
+            float direction = transform.localScale.x > 0 ? 1 : -1;
+            attack.transform.localPosition = new Vector3(attackOffsetX * direction, 0, 0);
         }
+    }
+
+    private bool IsGrounded()
+    {
+        return Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
     }
 }

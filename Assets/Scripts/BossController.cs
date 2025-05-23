@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement; // For scene transitions
 
-public class BossController : MonoBehaviour
+public class BossController : MonoBehaviour, IDamageable
 {
     [Header("Boss Health")]
     public int maxHealth = 10;

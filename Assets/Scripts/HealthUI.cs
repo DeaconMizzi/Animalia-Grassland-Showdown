@@ -10,19 +10,20 @@ public class HealthUI : MonoBehaviour
 
     public void InitializeHearts(int maxHealth)
     {
-        // Ensure the heart display matches the max health
         for (int i = 0; i < hearts.Length; i++)
         {
-            hearts[i].enabled = i < maxHealth; // Show hearts only up to maxHealth
+            if (hearts[i] != null)
+                hearts[i].enabled = i < maxHealth;
         }
     }
 
     public void UpdateHearts(int health)
     {
-        // Update heart visibility based on current health
         for (int i = 0; i < hearts.Length; i++)
         {
-            hearts[i].enabled = i < health; // Enable hearts only for remaining health
+            if (hearts[i] != null)
+                hearts[i].enabled = i < health;
         }
     }
+
 }

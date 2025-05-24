@@ -3,13 +3,13 @@ using UnityEngine;
 
 public class BossAttack : MonoBehaviour
 {
-    public float lifetime = 1.5f;
+    public float lifetime = 3f;
     public int damage = 1;
     public float speed = 5f;
     public bool isWave = false;
     public float waveAmplitude = 1f;
     public float waveFrequency = 2f;
-    public bool isStationary = false; // NEW: Prevent movement for ground-based spikes
+    public bool isStationary = false;
 
     private Vector2 direction;
     private Vector2 startPosition;
@@ -25,11 +25,11 @@ public class BossAttack : MonoBehaviour
             startPosition = transform.position;
         }
     }
-
     void Update()
     {
         if (isStationary) return;
 
+        // Wave movement
         if (isWave)
         {
             float waveY = Mathf.Sin(Time.time * waveFrequency) * waveAmplitude;
@@ -39,6 +39,21 @@ public class BossAttack : MonoBehaviour
         {
             transform.Translate(direction * speed * Time.deltaTime);
         }
+
+        // Raycast forward to check for bounce
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, 0.1f, LayerMask.GetMask("Ground", "Walls"));
+        if (hit.collider != null)
+        {
+            // Reflect the direction on X axis (bounce)
+            direction = Vector2.Reflect(direction, hit.normal);
+        }
+    }
+
+
+    public void SetDirection(Vector2 dir)
+    {
+        direction = dir.normalized;
+        startPosition = transform.position;
     }
 
     void OnTriggerEnter2D(Collider2D collision)

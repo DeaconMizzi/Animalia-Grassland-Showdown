@@ -18,37 +18,43 @@ public class BossAttack : MonoBehaviour
     {
         Destroy(gameObject, lifetime);
 
-        if (!isStationary)
-        {
-            GameObject player = GameObject.FindGameObjectWithTag("Player");
-            direction = (player != null) ? (player.transform.position - transform.position).normalized : Vector2.right;
-            startPosition = transform.position;
-        }
+        // ❌ REMOVE THIS - we don't need to reset direction
+        // if (!isStationary)
+        // {
+        //     GameObject player = GameObject.FindGameObjectWithTag("Player");
+        //     direction = (player != null) ? (player.transform.position - transform.position).normalized : Vector2.right;
+        //     startPosition = transform.position;
+        // }
+
+        startPosition = transform.position; // Keep this to allow wave bouncing
     }
+
     void Update()
     {
         if (isStationary) return;
 
-        // Wave movement
         if (isWave)
         {
+            // Move in wave pattern + optional spin
             float waveY = Mathf.Sin(Time.time * waveFrequency) * waveAmplitude;
             transform.position = new Vector2(transform.position.x + direction.x * speed * Time.deltaTime, startPosition.y + waveY);
+
+            // Spin effect for wave
+            transform.Rotate(0f, 0f, 180f * Time.deltaTime); 
         }
         else
         {
+            // Move straight without spin
             transform.Translate(direction * speed * Time.deltaTime);
         }
 
-        // Raycast forward to check for bounce
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, 0.1f, LayerMask.GetMask("Ground", "Walls"));
+        // Ground bounce (optional)
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 0.1f, LayerMask.GetMask("Ground", "Walls"));
         if (hit.collider != null)
         {
-            // Reflect the direction on X axis (bounce)
-            direction = Vector2.Reflect(direction, hit.normal);
+            waveAmplitude = -waveAmplitude;
         }
-    }
-
+}
 
     public void SetDirection(Vector2 dir)
     {
@@ -66,6 +72,10 @@ public class BossAttack : MonoBehaviour
                 playerHealth.TakeDamage(damage);
                 Debug.Log("Player hit by attack! Damage: " + damage);
             }
+            Destroy(gameObject);
+        }
+        else if (collision.gameObject.layer == LayerMask.NameToLayer("Ground") || collision.gameObject.layer == LayerMask.NameToLayer("Walls"))
+        {
             Destroy(gameObject);
         }
     }

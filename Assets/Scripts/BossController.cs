@@ -9,8 +9,8 @@ public class BossController : MonoBehaviour, IDamageable
     [HideInInspector] public int currentHealth;
 
     [Header("Attack Parameters")]
-    public float minAttackInterval = 1f;
-    public float maxAttackInterval = 2f;
+    public float minAttackInterval = 0.5f;
+    public float maxAttackInterval = 1f;
     public float chargeTime = 0.8f;
     public Transform attackPoint;
     public GameObject swipePrefab;
@@ -52,25 +52,22 @@ public class BossController : MonoBehaviour, IDamageable
 
     private IEnumerator AttackCycle()
     {
+        float moveCooldown = 2f; // Boss moves every 2 seconds
+        float moveTimer = moveCooldown;
+
         while (isAlive)
         {
-            yield return new WaitForSeconds(Random.Range(minAttackInterval, maxAttackInterval));
+            float attackInterval = Random.Range(minAttackInterval, maxAttackInterval);
+            yield return new WaitForSeconds(attackInterval);
 
-            if (chargeGlow != null)
-                chargeGlow.SetActive(true);
-            yield return new WaitForSeconds(chargeTime);
-            if (chargeGlow != null)
-                chargeGlow.SetActive(false);
+            PerformAttack(); // Attack almost all the time
 
-            float actionChance = Random.value;
+            moveTimer -= attackInterval;
 
-            if (actionChance < 0.7f)
-            {
-                PerformAttack();
-            }
-            else
+            if (moveTimer <= 0f)
             {
                 MoveBoss();
+                moveTimer = moveCooldown; // Reset the move timer
             }
         }
     }
@@ -93,7 +90,7 @@ public class BossController : MonoBehaviour, IDamageable
         switch (attackType)
         {
             case 0:
-                SwipeAttack();
+                StartCoroutine(SwipeBurstAttack());
                 break;
             case 1:
                 SpikesAttack();
@@ -104,12 +101,32 @@ public class BossController : MonoBehaviour, IDamageable
         }
     }
 
-    private void SwipeAttack()
+    private IEnumerator SwipeBurstAttack()
     {
-        Debug.Log("Swipe Attack!");
-        GameObject attack = Instantiate(swipePrefab, attackPoint.position, Quaternion.identity);
-        BossAttack bossAttack = attack.GetComponent<BossAttack>();
-        if (bossAttack != null) bossAttack.speed = 4f;
+        Debug.Log("Swipe Burst Attack!");
+
+        int swipeCount = Random.Range(3, 6); // Number of swipes per burst
+        float delayBetweenSwipes = 0.2f;
+
+        for (int i = 0; i < swipeCount; i++)
+        {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player == null) yield break;
+
+            Vector2 direction = (player.transform.position - attackPoint.position).normalized;
+
+            GameObject attack = Instantiate(swipePrefab, attackPoint.position, Quaternion.identity);
+            BossAttack bossAttack = attack.GetComponent<BossAttack>();
+            if (bossAttack != null)
+            {
+                bossAttack.isWave = false;
+                bossAttack.isStationary = false;
+                bossAttack.SetDirection(direction);
+                bossAttack.speed = 6f; // Adjust speed as needed
+            }
+
+            yield return new WaitForSeconds(delayBetweenSwipes);
+        }
     }
 
     private void SpikesAttack()
@@ -146,7 +163,7 @@ public class BossController : MonoBehaviour, IDamageable
             RaycastHit2D hit = Physics2D.Raycast(checkPos, Vector2.down, 2f, groundLayer);
             if (hit.collider != null)
             {
-                float yOffset = +0.5f;
+                float yOffset = +0.4f;
                 Vector3 spikePos = new Vector3(checkPos.x, hit.point.y + yOffset, attackPoint.position.z);
                 Instantiate(spikesPrefab, spikePos, Quaternion.identity);
             }
@@ -158,25 +175,26 @@ public class BossController : MonoBehaviour, IDamageable
     private IEnumerator SpawnWaveAttack()
     {
         Debug.Log("Wave Attack!");
-        int waveCount = 4;
-        float delayBetweenWaves = 0.2f;
-        float waveSpacing = 0.5f;
 
-        // Determine boss's facing direction
-        float direction = transform.localScale.x < 0 ? -1f : 1f;
+        int minWaves = 2;
+        int maxWaves = 5;
+        int waveCount = Random.Range(minWaves, maxWaves + 1);
+        float delayBetweenWaves = Random.Range(0.7f, 1.0f);
+
+        float facingDirection = transform.localScale.x < 0 ? 1f : -1f; // Correct for your setup!
+        Vector2 waveDirection = new Vector2(facingDirection, 0f);
 
         for (int i = 0; i < waveCount; i++)
         {
-            Vector3 waveSpawnPos = attackPoint.position + new Vector3(i * waveSpacing * direction, 0, 0);
-            GameObject attack = Instantiate(wavePrefab, waveSpawnPos, Quaternion.identity);
+            GameObject attack = Instantiate(wavePrefab, attackPoint.position, Quaternion.identity);
             BossAttack bossAttack = attack.GetComponent<BossAttack>();
             if (bossAttack != null)
             {
                 bossAttack.isWave = true;
-                bossAttack.waveAmplitude = 1.5f;
-                bossAttack.waveFrequency = 2f;
+                bossAttack.waveAmplitude = Random.Range(0.8f, 2.0f);
+                bossAttack.waveFrequency = Random.Range(1.5f, 3.0f);
                 bossAttack.speed = 3f;
-                bossAttack.SetDirection((playerLastPosition - waveSpawnPos).normalized);
+                bossAttack.SetDirection(waveDirection);
             }
 
             yield return new WaitForSeconds(delayBetweenWaves);

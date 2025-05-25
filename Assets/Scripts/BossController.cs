@@ -28,12 +28,15 @@ public class BossController : MonoBehaviour, IDamageable
     private Rigidbody2D rb;
     private Vector3 playerLastPosition;
 
+    private CutsceneManager cutsceneManager; // Reference to existing CutsceneManager
+
     void Start()
     {
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         currentHealth = maxHealth;
         StartCoroutine(AttackCycle());
+        cutsceneManager = FindObjectOfType<CutsceneManager>();
     }
 
     void Update()
@@ -72,8 +75,17 @@ public class BossController : MonoBehaviour, IDamageable
         isAlive = false;
         StopAllCoroutines();
         if (animator != null) animator.SetTrigger("Die");
-        Destroy(gameObject, 1f);
-        SceneManager.LoadScene("Win");
+
+        CutsceneManager cutsceneManager = FindObjectOfType<CutsceneManager>();
+        if (cutsceneManager != null)
+        {
+            cutsceneManager.StartFadeAndLoad("Win");
+        }
+        else
+        {
+            Debug.LogWarning("CutsceneManager not found, loading scene immediately.");
+            SceneManager.LoadScene("Win");
+        }
     }
 
     private IEnumerator AttackCycle()
@@ -235,40 +247,15 @@ public class BossController : MonoBehaviour, IDamageable
 
     private void MoveBoss()
     {
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player == null) return;
+        float direction = Random.value < 0.5f ? -1f : 1f;
+        transform.localScale = new Vector3(direction > 0 ? -1f : 1f, 1f, 1f);
 
-        float desiredDistance = 6f; // Boss wants to stay ~6 units away from player
-        float distanceToPlayer = Vector2.Distance(transform.position, player.transform.position);
-        float direction = (transform.position.x - player.transform.position.x) > 0 ? 1f : -1f;
+        if (animator != null) animator.SetTrigger("Dash");
 
-        if (distanceToPlayer < desiredDistance)
-        {
-            // Player too close → move away
-            direction = (transform.position.x - player.transform.position.x) > 0 ? 1f : -1f;
-        }
-        else if (distanceToPlayer > desiredDistance + 2f)
-        {
-            // Optional: Player too far → move closer
-            direction = (player.transform.position.x - transform.position.x) > 0 ? 1f : -1f;
-        }
-        else
-        {
-            // Stay in place if already at good distance
-            direction = 0f;
-        }
+        Vector3 newPos = transform.position + new Vector3(hopDistance * direction, 0, 0);
+        transform.position = Vector3.Lerp(transform.position, newPos, 0.5f);
 
-        if (direction != 0f)
-        {
-            transform.localScale = new Vector3(direction > 0 ? -1f : 1f, 1f, 1f);
-
-            if (animator != null) animator.SetTrigger("Dash");
-
-            Vector3 newPos = transform.position + new Vector3(hopDistance * direction, 0, 0);
-            transform.position = Vector3.Lerp(transform.position, newPos, 0.5f);
-
-            StartCoroutine(ResetFacingAfterDash());
-        }
+        StartCoroutine(ResetFacingAfterDash());
     }
 
     private IEnumerator ResetFacingAfterDash()

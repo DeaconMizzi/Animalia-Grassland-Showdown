@@ -62,6 +62,30 @@ public class CutsceneManager : MonoBehaviour
         dialogueManager.ShowDialogue("Squid", "Over? Let's see about that...", SquidPortrait);
     }
 
+    public void StartDialogueEnd1()
+    {
+        StartCoroutine(PlayEndDialogueSequence());
+    }
+
+    private IEnumerator PlayEndDialogueSequence()
+    {
+        dialogueManager.ShowDialogue("Cheetah", "Huh, that easy?", CheetahPortrait);
+        yield return new WaitForSeconds(5f); // Wait 5 seconds
+
+        dialogueManager.ShowDialogue("Bunny", "There you are! I've been looking all around this area for you!", BunnyPortrait);
+        yield return new WaitForSeconds(5f);
+
+        dialogueManager.ShowDialogue("Cheetah", "Yea, he was hidden down here, trying to set off the attacks.", CheetahPortrait);
+        yield return new WaitForSeconds(5f);
+
+        dialogueManager.ShowDialogue("Bunny", "Well hop on, we got another mission to get to!", BunnyPortrait);
+        yield return new WaitForSeconds(5f);
+
+        dialogueManager.ShowDialogue("Cheetah", "Now it's your turn to go.", CheetahPortrait);
+        yield return new WaitForSeconds(5f);
+
+        dialogueManager.HideDialogue(); // Optional: hide dialogue at the end
+    }
 
     public void EndDialogue()
     {

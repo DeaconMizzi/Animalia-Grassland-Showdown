@@ -47,6 +47,9 @@ TagManager:
   - name: Backdrop
     uniqueID: 3924014351
     locked: 0
+  - name: BG
+    uniqueID: 1068972599
+    locked: 0
   - name: Ground
     uniqueID: 4248970905
     locked: 0

@@ -38,12 +38,14 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         jumpCount = maxJumps;
+
+        // Force Cheetah for testing
+        characterType = CharacterType.Cheetah;
     }
 
     void Update()
     {
         UpdateAnimatorStates();
-
         HandleMovement();
         HandleDirection();
         HandleJump();
@@ -128,7 +130,7 @@ public class PlayerController : MonoBehaviour
     private IEnumerator Dash()
     {
         isDashing = true;
-        animator.SetBool("isDashing", true); // Trigger dash animation
+        animator.SetBool("isDashing", true);
 
         float originalGravity = rb.gravityScale;
         rb.gravityScale = 0;
@@ -140,7 +142,7 @@ public class PlayerController : MonoBehaviour
 
         rb.gravityScale = originalGravity;
         isDashing = false;
-        animator.SetBool("isDashing", false); // Return to idle/run
+        animator.SetBool("isDashing", false);
     }
 
     private IEnumerator DelayedAttack()
@@ -158,6 +160,11 @@ public class PlayerController : MonoBehaviour
 
     private bool IsGrounded()
     {
+        if (groundCheck == null)
+        {
+            Debug.LogWarning("groundCheck not assigned!");
+            return false;
+        }
         return Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
     }
 }

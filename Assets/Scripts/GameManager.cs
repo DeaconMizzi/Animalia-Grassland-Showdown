@@ -6,15 +6,23 @@ public class GameManager : MonoBehaviour
 {
     public GameObject cheetahPrefab; // Prefab for the Cheetah
     public GameObject bunnyPrefab;   // Prefab for the Bunny
-    public Transform spawnPoint;    // Spawn point for the player
+    public Transform spawnPoint;     // Spawn point for the player
     public CameraController cameraFollow; // Reference to the CameraFollow script
 
     void Start()
     {
         GameObject player;
 
+        // Check if a character was selected. If not, default to Cheetah.
+        string selected = CharacterSelectManager.selectedCharacter;
+        if (string.IsNullOrEmpty(selected))
+        {
+            Debug.LogWarning("No character selected. Defaulting to Cheetah.");
+            selected = "Cheetah";
+        }
+
         // Spawn the selected character
-        if (CharacterSelectManager.selectedCharacter == "Cheetah")
+        if (selected == "Cheetah")
         {
             player = Instantiate(cheetahPrefab, spawnPoint.position, Quaternion.identity);
         }

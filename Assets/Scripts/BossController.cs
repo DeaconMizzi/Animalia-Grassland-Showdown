@@ -23,14 +23,38 @@ public class BossController : MonoBehaviour, IDamageable
     public LayerMask groundLayer;
 
     private bool isAlive = true;
+    private bool isFrozen = false;
     private Animator animator;
+    private Rigidbody2D rb;
     private Vector3 playerLastPosition;
 
     void Start()
     {
         animator = GetComponent<Animator>();
+        rb = GetComponent<Rigidbody2D>();
         currentHealth = maxHealth;
         StartCoroutine(AttackCycle());
+    }
+
+    void Update()
+    {
+        if (!isAlive || isFrozen) return;
+        // Add other boss logic here if needed
+    }
+
+    public void SetFrozen(bool frozen)
+    {
+        isFrozen = frozen;
+
+        if (frozen)
+        {
+            StopAllCoroutines();
+            if (rb != null) rb.velocity = Vector2.zero;
+        }
+        else
+        {
+            if (isAlive) StartCoroutine(AttackCycle());
+        }
     }
 
     public void TakeDamage(int damage)
@@ -39,6 +63,7 @@ public class BossController : MonoBehaviour, IDamageable
         currentHealth -= damage;
         Debug.Log("Boss hit! Current Health: " + currentHealth);
         if (currentHealth <= 0) Die();
+        else if (animator != null) animator.SetTrigger("Hit");
     }
 
     private void Die()
@@ -46,28 +71,31 @@ public class BossController : MonoBehaviour, IDamageable
         Debug.Log("Boss Defeated!");
         isAlive = false;
         StopAllCoroutines();
+        if (animator != null) animator.SetTrigger("Die");
         Destroy(gameObject, 1f);
         SceneManager.LoadScene("Win");
     }
 
     private IEnumerator AttackCycle()
     {
-        float moveCooldown = 2f; // Boss moves every 2 seconds
+        float moveCooldown = 2f;
         float moveTimer = moveCooldown;
 
-        while (isAlive)
+        while (isAlive && !isFrozen)
         {
             float attackInterval = Random.Range(minAttackInterval, maxAttackInterval);
             yield return new WaitForSeconds(attackInterval);
 
-            PerformAttack(); // Attack almost all the time
-
-            moveTimer -= attackInterval;
-
-            if (moveTimer <= 0f)
+            if (!isFrozen)
             {
-                MoveBoss();
-                moveTimer = moveCooldown; // Reset the move timer
+                PerformAttack();
+                moveTimer -= attackInterval;
+
+                if (moveTimer <= 0f)
+                {
+                    MoveBoss();
+                    moveTimer = moveCooldown;
+                }
             }
         }
     }
@@ -77,15 +105,13 @@ public class BossController : MonoBehaviour, IDamageable
         int attackType = Random.Range(0, 3);
 
         if (animator != null)
+        {
             animator.ResetTrigger("Attack");
-
-        if (animator != null)
             animator.SetTrigger("Attack");
+        }
 
-        // Capture player position for wave targeting
         GameObject player = GameObject.FindWithTag("Player");
-        if (player != null)
-            playerLastPosition = player.transform.position;
+        if (player != null) playerLastPosition = player.transform.position;
 
         switch (attackType)
         {
@@ -105,11 +131,13 @@ public class BossController : MonoBehaviour, IDamageable
     {
         Debug.Log("Swipe Burst Attack!");
 
-        int swipeCount = Random.Range(3, 6); // Number of swipes per burst
+        int swipeCount = Random.Range(3, 6);
         float delayBetweenSwipes = 0.2f;
 
         for (int i = 0; i < swipeCount; i++)
         {
+            if (isFrozen) yield break;
+
             GameObject player = GameObject.FindGameObjectWithTag("Player");
             if (player == null) yield break;
 
@@ -122,7 +150,7 @@ public class BossController : MonoBehaviour, IDamageable
                 bossAttack.isWave = false;
                 bossAttack.isStationary = false;
                 bossAttack.SetDirection(direction);
-                bossAttack.speed = 6f; // Adjust speed as needed
+                bossAttack.speed = 6f;
             }
 
             yield return new WaitForSeconds(delayBetweenSwipes);
@@ -157,6 +185,8 @@ public class BossController : MonoBehaviour, IDamageable
 
         for (int i = 0; i < spikeCount; i++)
         {
+            if (isFrozen) yield break;
+
             float xOffset = direction * (initialDistance - i * step);
             Vector3 checkPos = new Vector3(playerGroundPos.x + xOffset, playerGroundPos.y + 1f, 0);
 
@@ -181,11 +211,13 @@ public class BossController : MonoBehaviour, IDamageable
         int waveCount = Random.Range(minWaves, maxWaves + 1);
         float delayBetweenWaves = Random.Range(0.7f, 1.0f);
 
-        float facingDirection = transform.localScale.x < 0 ? 1f : -1f; // Correct for your setup!
+        float facingDirection = transform.localScale.x < 0 ? 1f : -1f;
         Vector2 waveDirection = new Vector2(facingDirection, 0f);
 
         for (int i = 0; i < waveCount; i++)
         {
+            if (isFrozen) yield break;
+
             GameObject attack = Instantiate(wavePrefab, attackPoint.position, Quaternion.identity);
             BossAttack bossAttack = attack.GetComponent<BossAttack>();
             if (bossAttack != null)
@@ -203,17 +235,40 @@ public class BossController : MonoBehaviour, IDamageable
 
     private void MoveBoss()
     {
-        float direction = Random.value < 0.5f ? -1f : 1f;
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player == null) return;
 
-        transform.localScale = new Vector3(direction > 0 ? -1f : 1f, 1f, 1f);
+        float desiredDistance = 6f; // Boss wants to stay ~6 units away from player
+        float distanceToPlayer = Vector2.Distance(transform.position, player.transform.position);
+        float direction = (transform.position.x - player.transform.position.x) > 0 ? 1f : -1f;
 
-        if (animator != null)
-            animator.SetTrigger("Dash");
+        if (distanceToPlayer < desiredDistance)
+        {
+            // Player too close → move away
+            direction = (transform.position.x - player.transform.position.x) > 0 ? 1f : -1f;
+        }
+        else if (distanceToPlayer > desiredDistance + 2f)
+        {
+            // Optional: Player too far → move closer
+            direction = (player.transform.position.x - transform.position.x) > 0 ? 1f : -1f;
+        }
+        else
+        {
+            // Stay in place if already at good distance
+            direction = 0f;
+        }
 
-        Vector3 newPos = transform.position + new Vector3(hopDistance * direction, 0, 0);
-        transform.position = Vector3.Lerp(transform.position, newPos, 0.5f);
+        if (direction != 0f)
+        {
+            transform.localScale = new Vector3(direction > 0 ? -1f : 1f, 1f, 1f);
 
-        StartCoroutine(ResetFacingAfterDash());
+            if (animator != null) animator.SetTrigger("Dash");
+
+            Vector3 newPos = transform.position + new Vector3(hopDistance * direction, 0, 0);
+            transform.position = Vector3.Lerp(transform.position, newPos, 0.5f);
+
+            StartCoroutine(ResetFacingAfterDash());
+        }
     }
 
     private IEnumerator ResetFacingAfterDash()

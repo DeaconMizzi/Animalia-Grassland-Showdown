@@ -29,6 +29,11 @@ public class CutsceneManager : MonoBehaviour
         dialogueManager.ShowDialogue("Cheetah", "Doesn’t matter where he runs. We end this, today.", CheetahPortrait);
     }
 
+     public void StartDialogue4()
+    {
+        dialogueManager.ShowDialogue("Cheetah", "There he is, down there. It's time.", CheetahPortrait);
+    }
+
     public void EndDialogue()
     {
         dialogueManager.HideDialogue();
